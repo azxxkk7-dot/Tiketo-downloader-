@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOZ TikTok Downloader</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #0f0f0f; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #1e1e1e; padding: 2rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 450px; text-align: center; }
+        input { width: 90%; padding: 12px; margin-bottom: 20px; border-radius: 8px; border: none; outline: none; }
+        button { width: 100%; padding: 12px; border-radius: 8px; border: none; background: #ff0050; color: white; font-weight: bold; cursor: pointer; }
+        #result { margin-top: 20px; display: none; }
+        .thumb { width: 100%; border-radius: 8px; }
+        .dl-link { display: inline-block; margin-top: 10px; color: #00f2ea; text-decoration: none; border: 1px solid #00f2ea; padding: 5px 15px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>TikTok Downloader</h2>
+        <input type="text" id="urlInput" placeholder="Paste link TikTok di sini...">
+        <button onclick="processDownload()">Download Sekarang</button>
+        
+        <div id="result">
+            <img id="videoThumb" class="thumb" src="" alt="Thumbnail">
+            <p id="videoTitle"></p>
+            <a id="downloadBtn" class="dl-link" href="" target="_blank">Klik untuk Download Video</a>
+        </div>
+    </div>
+
+    <script>
+        async function processDownload() {
+            const url = document.getElementById('urlInput').value;
+            const resultDiv = document.getElementById('result');
+            if(!url) return alert("Masukkan URL!");
+
+            const response = await fetch('/download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url })
+            });
+
+            const data = await response.json();
+            if(data.error) {
+                alert("Gagal mengambil data: " + data.error);
+            } else {
+                document.getElementById('videoThumb').src = data.thumbnail;
+                document.getElementById('videoTitle').innerText = data.title;
+                document.getElementById('downloadBtn').href = data.url;
+                resultDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
